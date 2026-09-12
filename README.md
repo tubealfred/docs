@@ -1,12 +1,29 @@
-# TubeAlfred documentation
+# TubeAlfred Docs
 
-This private repository is the source of truth for future TubeAlfred Mintlify documentation edits: `https://github.com/raakesh/tubealfred-docs`. It contains only the six hand-authored MDX pages and `docs.json`; the remote production OpenAPI document generates the API reference.
+Source for the [TubeAlfred](https://tubealfred.com) developer documentation, covering the REST API, hosted MCP server, and command-line interface. The documentation is built with Mintlify from the repository root.
 
-The original application draft remains a migration reference. Do not create two-way synchronization or make future documentation edits in both repositories. Mintlify is not connected to this repository, and publication is still pending explicit approval.
+## Documentation map
 
-## Local validation
+- [`index.mdx`](./index.mdx) — product and interface overview
+- [`quickstart.mdx`](./quickstart.mdx) — first authenticated REST request
+- [`guides/authentication.mdx`](./guides/authentication.mdx) — API keys and MCP OAuth
+- [`guides/api-concepts.mdx`](./guides/api-concepts.mdx) — envelopes, pagination, errors, idempotency, billing, and versioning
+- [`guides/mcp.mdx`](./guides/mcp.mdx) — hosted MCP setup
+- [`guides/cli.mdx`](./guides/cli.mdx) — CLI installation and workflows
+- [`docs.json`](./docs.json) — Mintlify theme, navigation, and API-reference configuration
 
-Run from the repository root without adding Mintlify as a dependency:
+The canonical API description is [TubeAlfred's public OpenAPI document](https://tubealfred.com/openapi.json). Mintlify uses it to generate the endpoint reference, so this repository does not maintain a duplicate operation catalog.
+
+## Local development
+
+Clone the public repository:
+
+```bash
+git clone https://github.com/tubealfred/docs.git
+cd docs
+```
+
+Run the official Mintlify CLI from the repository root without adding it as a project dependency:
 
 ```bash
 PUPPETEER_SKIP_DOWNLOAD=true npx --yes mintlify@latest validate
@@ -16,8 +33,12 @@ PUPPETEER_SKIP_DOWNLOAD=true npx --yes mintlify@latest dev --open=false
 
 Use an isolated npm cache when the CLI is not already cached. Local search requires Mintlify CLI login.
 
-## Remote OpenAPI updates
+## Contributing
 
-Mintlify reads `https://tubealfred.com/openapi.json`, but a remote specification change does not trigger an automatic documentation deployment. On the current free plan, deploy and verify the application OpenAPI change, then use **Activity → Manual update** in Mintlify after explicit rebuild approval. Verify the affected generated endpoint page when the rebuild finishes.
+This repository is the source of truth for documentation changes. Make and review documentation edits here rather than synchronizing changes in both this repository and the TubeAlfred application repository.
 
-Mintlify connection, publishing, rebuilds, and hosting changes require explicit approval.
+Changes to the remote OpenAPI document are made in the application that generates it. After an OpenAPI change is deployed and verified, the current free-plan workflow requires **Activity → Manual update** in the Mintlify dashboard to rebuild the generated reference.
+
+## Hosting status
+
+The documentation has been validated in a local Mintlify preview. Mintlify is not connected to this organization repository, and the documentation is not published from it. Serving the documentation at the intended `https://tubealfred.com/docs` path remains part of the pending migration.
