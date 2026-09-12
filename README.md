@@ -6,6 +6,7 @@ Source for the [TubeAlfred](https://tubealfred.com) developer documentation, cov
 
 - [`index.mdx`](./index.mdx) — product and interface overview
 - [`quickstart.mdx`](./quickstart.mdx) — first authenticated REST request
+- [`video.mdx`](./video.mdx), [`channel.mdx`](./channel.mdx), [`discovery.mdx`](./discovery.mdx), [`playlist.mdx`](./playlist.mdx), and [`utility-batch.mdx`](./utility-batch.mdx) — legacy-compatible API overview routes
 - [`guides/authentication.mdx`](./guides/authentication.mdx) — API keys and MCP OAuth
 - [`guides/api-concepts.mdx`](./guides/api-concepts.mdx) — envelopes, pagination, errors, idempotency, billing, and versioning
 - [`guides/mcp.mdx`](./guides/mcp.mdx) — hosted MCP setup
@@ -41,4 +42,4 @@ Changes to the remote OpenAPI document are made in the application that generate
 
 ## Hosting status
 
-The documentation has been validated in a local Mintlify preview. Mintlify is not connected to this organization repository, and the documentation is not published from it. Serving the documentation at the intended `https://tubealfred.com/docs` path remains part of the pending migration.
+The guides and generated reference are live through Mintlify under `https://tubealfred.com/docs`. Laravel continues to serve the landing and legacy section paths until the Forge cutover is completed. The overview pages preserve those legacy paths and their endpoint bookmarks for that cutover.

@@ -3,6 +3,8 @@ title: "TubeAlfred developer docs"
 description: "Choose the REST API, hosted MCP server, or CLI for read-only public YouTube data."
 ---
 
+<span className="block scroll-mt-32" id="introduction" />
+
 TubeAlfred gives applications, agents, and command-line workflows a consistent way to work with public YouTube data.
 
 Choose the interface that fits your workflow:
@@ -10,6 +12,128 @@ Choose the interface that fits your workflow:
 - **REST API** for applications, scripts, workers, and internal services. Start with the [quickstart](/quickstart), then use the generated API reference in this site.
 - **Hosted MCP** for Claude and other MCP-compatible clients. Follow the [MCP guide](/guides/mcp).
 - **CLI** for terminal use and shell automation. Follow the [CLI guide](/guides/cli).
+
+## Quickstart
+
+<span id="docs-code-quickstart-curl" /><span id="docs-code-quickstart-curl-tab" /><span id="docs-code-quickstart-curl-panel" />
+<span id="docs-code-quickstart-javascript" /><span id="docs-code-quickstart-javascript-tab" /><span id="docs-code-quickstart-javascript-panel" />
+<span id="docs-code-quickstart-python" /><span id="docs-code-quickstart-python-tab" /><span id="docs-code-quickstart-python-panel" />
+<span id="docs-code-quickstart-php" /><span id="docs-code-quickstart-php-tab" /><span id="docs-code-quickstart-php-panel" />
+<span id="docs-code-quickstart-response" />
+
+Create a team API key with the `youtube.read` scope, keep it in a server-side secret store, and follow the [REST API quickstart](/quickstart) to make an authenticated request.
+
+## Authentication
+
+<span id="docs-code-auth-bearer" /><span id="docs-code-auth-x-api-key" />
+
+REST and developer MCP clients can use a team API key. Claude web and mobile use OAuth when connecting to the hosted MCP server. See [Authentication](/guides/authentication) for the supported flows.
+
+## Response envelope
+
+<span id="docs-code-envelope-success" /><span id="docs-code-envelope-failure" />
+
+Successful REST responses use a `status: "success"` envelope with the endpoint-specific payload in `data`. Failures use the HTTP status code and a flat object that always includes `message`. See [API concepts](/guides/api-concepts#response-envelope).
+
+<span className="block scroll-mt-32" id="data-freshness" />
+
+## Data freshness and reliability
+
+Data is fetched on demand and may pass through short-lived caches. TubeAlfred does not promise a universal freshness window, real-time results, historical completeness, or a public freshness SLA. Read [public-data boundaries](/guides/api-concepts#public-data-boundaries) and [data sources and reliability](https://tubealfred.com/data-sources).
+
+<span className="block scroll-mt-32" id="rest-endpoints" />
+
+## REST endpoint catalog
+
+- [Video endpoints](/video)
+- [Channel endpoints](/channel)
+- [Discovery endpoints](/discovery)
+- [Playlist endpoints](/playlist)
+- [Utility and batch endpoints](/utility-batch)
+
+The generated **REST API reference** in the sidebar contains the authoritative parameters, schemas, examples, and responses.
+
+## Pagination
+
+<span id="docs-code-pagination-first" /><span id="docs-code-pagination-first-response" /><span id="docs-code-pagination-next" />
+
+List operations return `data.continuation_token` when another page is available. Treat tokens as opaque, keep them with the original query, and fetch another page only when needed. See [Pagination](/guides/api-concepts#pagination).
+
+<span className="block scroll-mt-32" id="idempotency" />
+
+## Idempotency and retries
+
+POST pagination and batch operations accept `Idempotency-Key`. Matching retries of the identical validated request within 24 hours replay the first successful response; conflicting reuse returns HTTP 409. See [Retries and idempotency](/guides/api-concepts#retries-and-idempotency).
+
+## Versioning
+
+Public operations use `/v1/youtube/*`. Clients should tolerate additive response fields and optional parameters. Breaking changes use a new versioned path. See [Versioning](/guides/api-concepts#versioning).
+
+<span className="block scroll-mt-32" id="limits" />
+
+## Credits, rate limits, and quota
+
+<span id="docs-code-429-body" /><span id="docs-code-402-body" />
+
+Costs vary by operation and pagination calls are metered independently. Use the generated [pricing and credits document](https://tubealfred.com/pricing.md) for current values and [API concepts](/guides/api-concepts#billing-and-limits) for client behavior.
+
+## Errors
+
+Branch on HTTP status and documented error code instead of matching message text. Common HTTP statuses:
+
+- <span id="error-400" /><span id="docs-code-error-400" />`400` invalid request or pagination state
+- <span id="error-401" /><span id="docs-code-error-401" />`401` invalid or missing credentials
+- <span id="error-402" /><span id="docs-code-error-402" />`402` insufficient team credits
+- <span id="error-403" /><span id="docs-code-error-403" />`403` scope, team, or content restriction
+- <span id="error-404" /><span id="docs-code-error-404" />`404` unavailable resource
+- <span id="error-409" /><span id="docs-code-error-409" />`409` idempotency conflict or in-progress request
+- <span id="error-422" /><span id="docs-code-error-422" />`422` invalid endpoint parameter
+- <span id="error-429" /><span id="docs-code-error-429" />`429` TubeAlfred or upstream rate limit
+- <span id="error-500" /><span id="docs-code-error-500" />`500` response processing failure
+- <span id="error-502" /><span id="docs-code-error-502" />`502` upstream request failure
+- <span id="error-503" /><span id="docs-code-error-503" />`503` temporary upstream unavailability
+- <span id="error-504" /><span id="docs-code-error-504" />`504` upstream timeout
+
+See [Errors](/guides/api-concepts#errors) and the generated endpoint reference for response schemas.
+
+<span className="block scroll-mt-32" id="mcp" />
+
+## MCP server
+
+<span id="docs-code-claude-stdio-config" /><span id="docs-code-claude-config" /><span id="docs-code-mcp-curl" />
+
+The hosted read-only MCP endpoint is `https://mcp.tubealfred.com/`. Follow the [MCP guide](/guides/mcp) for OAuth and API-key client setup.
+
+<span className="block scroll-mt-32" id="mcp-mapping" />
+
+## MCP tool mapping
+
+The hosted MCP server exposes the same current YouTube capabilities as the REST API. Use the [operation manifest](https://tubealfred.com/.well-known/tubealfred-youtube-operations.v1.json) for the current endpoint-to-tool mapping and the [full agent reference](https://tubealfred.com/llms-full.txt) for schemas.
+
+<span className="block scroll-mt-32" id="for-agents" />
+
+## For AI agents
+
+<span id="docs-code-ai-prompt" />
+
+Start with [`llms.txt`](https://tubealfred.com/llms.txt), use [`llms-full.txt`](https://tubealfred.com/llms-full.txt) for the complete reference, or consume the [OpenAPI specification](https://tubealfred.com/openapi.json). Select one declared operation and pass only arguments in its schema.
+
+## Changelog
+
+- **2026-08-26:** Published explicit public-data and reliability boundaries.
+- **2026-08-25:** Added idempotent retries for POST pagination and batch operations.
+- **2026-08-21:** Standardized the public REST, MCP, OpenAPI, and agent catalog at 34 current operations.
+
+## Data handling
+
+TubeAlfred records usage and lightweight request insights for billing, quota, and product quality. It does not store raw comments, raw transcripts, full descriptions, upstream response bodies, request headers, or plaintext API keys by default.
+
+## Next steps
+
+- [Make your first REST request](/quickstart)
+- [Choose an authentication flow](/guides/authentication)
+- [Connect an MCP client](/guides/mcp)
+- [Use the command-line interface](/guides/cli)
 
 ## What TubeAlfred provides
 
@@ -25,4 +149,3 @@ These generated production documents are authoritative when details change:
 - [Full agent reference](https://tubealfred.com/llms-full.txt) for the current REST and MCP catalog
 - [Authentication guide](https://tubealfred.com/auth.md) for API-key and OAuth flows
 - [Pricing and credits](https://tubealfred.com/pricing.md) for current plan and credit information
-

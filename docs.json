@@ -30,6 +30,16 @@
         ]
       },
       {
+        "group": "API overviews",
+        "pages": [
+          "video",
+          "channel",
+          "discovery",
+          "playlist",
+          "utility-batch"
+        ]
+      },
+      {
         "group": "REST API reference",
         "openapi": "https://tubealfred.com/openapi.json"
       }

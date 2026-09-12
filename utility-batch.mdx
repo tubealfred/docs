@@ -1,0 +1,14 @@
+---
+title: "Utility and batch endpoints"
+description: "Resolve YouTube URLs and fetch batch video or channel details."
+---
+
+<span id="utility-batch-endpoints" />
+
+Resolve an unknown YouTube URL before choosing a resource-specific operation. Batch operations accept the inputs and limits documented in their generated reference pages.
+
+- <span id="endpoint-utility-resolve" />[Resolve URL](/api-reference/utility-and-batch-endpoints/resolve-url)
+- <span id="endpoint-videos-batch" />[Batch video details](/api-reference/utility-and-batch-endpoints/batch-video-details)
+- <span id="endpoint-channels-batch" />[Batch channel details](/api-reference/utility-and-batch-endpoints/batch-channel-details)
+
+POST batch retries can use `Idempotency-Key`. Reuse a key only for the identical validated request.
