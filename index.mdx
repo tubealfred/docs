@@ -1,0 +1,28 @@
+---
+title: "TubeAlfred developer docs"
+description: "Choose the REST API, hosted MCP server, or CLI for read-only public YouTube data."
+---
+
+TubeAlfred gives applications, agents, and command-line workflows a consistent way to work with public YouTube data.
+
+Choose the interface that fits your workflow:
+
+- **REST API** for applications, scripts, workers, and internal services. Start with the [quickstart](/quickstart), then use the generated API reference in this site.
+- **Hosted MCP** for Claude and other MCP-compatible clients. Follow the [MCP guide](/guides/mcp).
+- **CLI** for terminal use and shell automation. Follow the [CLI guide](/guides/cli).
+
+## What TubeAlfred provides
+
+TubeAlfred exposes read-only operations for public YouTube data, including videos, channels, playlists, comments, transcripts, captions, and search. The exact operation catalog and schemas come from the production [OpenAPI specification](https://tubealfred.com/openapi.json).
+
+TubeAlfred is an independent service. It is not the official YouTube Data API, and it does not provide private YouTube Studio analytics or write access to YouTube accounts.
+
+## Production sources of truth
+
+These generated production documents are authoritative when details change:
+
+- [OpenAPI 3.1 specification](https://tubealfred.com/openapi.json) for REST operations, parameters, examples, responses, and errors
+- [Full agent reference](https://tubealfred.com/llms-full.txt) for the current REST and MCP catalog
+- [Authentication guide](https://tubealfred.com/auth.md) for API-key and OAuth flows
+- [Pricing and credits](https://tubealfred.com/pricing.md) for current plan and credit information
+

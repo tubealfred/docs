@@ -1,0 +1,52 @@
+---
+title: "API concepts"
+description: "Handle TubeAlfred pagination, retries, errors, billing, and public-data boundaries correctly."
+---
+
+This page explains the behavior shared by TubeAlfred's read-only YouTube operations. The production [OpenAPI specification](https://tubealfred.com/openapi.json) remains authoritative for each operation's request, response, and error schema.
+
+## Pagination
+
+List operations return `data.continuation_token` when another page is available. Send that token as the documented query parameter for a GET operation or in the JSON body of the corresponding POST page operation.
+
+Treat continuation tokens as opaque and keep them with the original query. Stop when the response does not contain another token. Each fetched page is a separate call and applies the current cost for that operation.
+
+## Retries and idempotency
+
+GET operations are read-only and naturally idempotent. A repeated successful GET can still make another upstream call and incur the operation's current credit cost. Retry temporary failures with bounded backoff and respect `Retry-After` whenever it is present.
+
+POST pagination and batch operations accept an optional `Idempotency-Key`. Reusing the same key with the identical validated request within 24 hours replays the first successful response with `Idempotency-Replayed: true`, without another upstream call or credit charge. Reusing a key with different input returns HTTP 409 with `idempotency_key_conflict`. Send an `X-Correlation-ID` when you need to trace attempts across your logs and TubeAlfred support.
+
+## Response envelope
+
+Successful responses use a `status: "success"` envelope whose `data` object contains the endpoint-specific payload. Failure responses are flat objects that always include `message`; use the HTTP status and documented error code to classify them. Validation and billing failures can also include `errors` or `context`, while upstream failures can include stable `code`, `statusCode`, and `correlationId` fields.
+
+## Errors
+
+Failures include a human-readable `message`. Upstream failures can also include a stable machine-readable code and correlation ID. Branch on the HTTP status and documented error code rather than matching message text.
+
+Keep these outcomes distinct:
+
+- Invalid input or pagination state should be corrected, not retried unchanged.
+- Missing credentials and insufficient scope require an authentication or permission fix.
+- An unavailable or restricted YouTube resource is not a billing failure.
+- Rate limits and temporary upstream failures may be retried according to `Retry-After` and bounded backoff.
+- An insufficient-credit response requires the team to review its balance or plan; it should not be treated as an upstream outage.
+
+## Billing and limits
+
+Costs vary by operation and can depend on the result, such as a resolved item or available transcript. Pagination calls are metered independently. Failed HTTP responses are not charged.
+
+Do not copy prices, credit costs, or rate limits into long-lived client configuration. Read the generated [pricing and credits document](https://tubealfred.com/pricing.md), use operation metadata in the OpenAPI reference, and inspect the current rate-limit and billing fields returned by the service.
+
+## Versioning
+
+Public operations use `/v1/youtube/*`. Clients should tolerate additive response fields and new optional parameters within v1. Breaking changes use a new versioned path. Consult the production [full reference](https://tubealfred.com/llms-full.txt) for the current version and deprecation policy.
+
+## Public-data boundaries
+
+TubeAlfred is an independent, read-only service for publicly accessible YouTube data. It does not expose private YouTube Studio analytics or channel write operations.
+
+Data is fetched on demand and may pass through short-lived caches. There is no universal freshness window, real-time guarantee, historical-completeness guarantee, or public uptime/freshness SLA. Search results, counts, live state, comments, transcripts, and resource availability can change between calls.
+
+Read [data sources and reliability](https://tubealfred.com/data-sources) for current storage, retry, availability, and acceptable-use boundaries.

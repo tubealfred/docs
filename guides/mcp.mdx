@@ -1,0 +1,49 @@
+---
+title: "Hosted MCP server"
+description: "Connect Claude or a developer MCP client to TubeAlfred's hosted read-only YouTube tools."
+---
+
+The TubeAlfred MCP endpoint is:
+
+```text
+https://mcp.tubealfred.com/
+```
+
+Do not use the REST host with an `/mcp` path. The MCP server has its own hostname.
+
+## Claude web and mobile
+
+1. Add a custom connector in Claude's integrations settings.
+2. Enter `https://mcp.tubealfred.com/` as the connector URL.
+3. Continue to TubeAlfred when the OAuth prompt opens.
+4. Sign in, choose the appropriate team, and approve access.
+5. Return to Claude and ask it to use a TubeAlfred YouTube tool.
+
+The connector uses OAuth. Do not paste a team API key into the Claude web or mobile connector flow.
+
+## Developer MCP clients
+
+Clients that support Streamable HTTP and custom headers can connect with a team API key:
+
+```json
+{
+  "mcpServers": {
+    "tubealfred-youtube": {
+      "type": "streamable-http",
+      "url": "https://mcp.tubealfred.com/",
+      "headers": {
+        "Authorization": "Bearer YOUR_TUBEALFRED_API_KEY"
+      }
+    }
+  }
+}
+```
+
+Configuration shapes vary by client. Preserve the endpoint and authorization header while adapting the outer configuration to the client's documented format.
+
+## Tool schemas and errors
+
+Discover the available `youtube_*` tools from the connected server and pass only arguments declared by the selected tool's input schema. The production [full agent reference](https://tubealfred.com/llms-full.txt) describes the current tool catalog.
+
+Handle authentication, validation, permission, credit, rate-limit, unavailable-data, and upstream-service errors as distinct outcomes. Use [current pricing](https://tubealfred.com/pricing.md) rather than copying credit costs into client prompts or configuration.
+

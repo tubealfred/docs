@@ -1,0 +1,50 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "TubeAlfred Docs",
+  "description": "Use TubeAlfred through its REST API, hosted MCP server, or command-line interface.",
+  "colors": {
+    "primary": "#d92930",
+    "light": "#fb7185",
+    "dark": "#d92930"
+  },
+  "fonts": {
+    "family": "Figtree"
+  },
+  "navigation": {
+    "groups": [
+      {
+        "group": "Get started",
+        "pages": [
+          "index",
+          "quickstart"
+        ]
+      },
+      {
+        "group": "Core guides",
+        "pages": [
+          "guides/authentication",
+          "guides/api-concepts",
+          "guides/mcp",
+          "guides/cli"
+        ]
+      },
+      {
+        "group": "REST API reference",
+        "openapi": "https://tubealfred.com/openapi.json"
+      }
+    ]
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "TubeAlfred",
+        "href": "https://tubealfred.com"
+      },
+      {
+        "label": "Pricing",
+        "href": "https://tubealfred.com/pricing"
+      }
+    ]
+  }
+}

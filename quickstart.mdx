@@ -1,0 +1,38 @@
+---
+title: "REST API quickstart"
+description: "Create a team API key and make your first authenticated TubeAlfred REST request."
+---
+
+## 1. Create an API key
+
+Open [API Keys in the TubeAlfred app](https://tubealfred.com/app/api-keys), select the appropriate team, and create an API key with the `youtube.read` scope.
+
+Keep the key on the server or in a local secret store. Do not embed it in browser code, commit it to a repository, or include it in public logs.
+
+Requests use the team's credit balance. Check the current [pricing and credits document](https://tubealfred.com/pricing.md) before integrating; do not assume an example request is free.
+
+## 2. Send a request
+
+Use the key as a bearer token:
+
+```bash
+curl "https://api.tubealfred.com/v1/youtube/search?query=how+to+learn+faster" \
+  -H "Authorization: Bearer YOUR_TUBEALFRED_API_KEY"
+```
+
+REST requests may instead send the same key with the `X-API-Key` header. Bearer authentication is the recommended default because it also matches developer MCP configuration.
+
+## 3. Handle the response
+
+Successful responses use a `status: "success"` envelope. The endpoint-specific payload is in `data`.
+
+Failures use the HTTP status code and a flat response object that always includes `message`; they do not use the success envelope. Clients should handle authentication, validation, permission, credit, rate-limit, unavailable-data, and upstream-service errors separately. For the request and response contract, open **Search** under **REST API reference → Discovery endpoints** in the sidebar.
+
+Do not infer current costs or limits from examples. Use the generated [pricing document](https://tubealfred.com/pricing.md) for current credit information and the response headers and error schema documented for each endpoint.
+
+## Next steps
+
+- Review [authentication](/guides/authentication) before deploying a client.
+- Build reliable clients with the shared [API concepts](/guides/api-concepts).
+- Connect an AI client with the [MCP guide](/guides/mcp).
+- Automate terminal workflows with the [CLI guide](/guides/cli).

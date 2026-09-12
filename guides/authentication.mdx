@@ -1,0 +1,39 @@
+---
+title: "Authentication"
+description: "Authenticate REST clients, developer MCP clients, and hosted MCP connectors safely."
+---
+
+TubeAlfred supports two authentication paths. Use a team API key for REST and developer-controlled MCP clients. Use the hosted OAuth flow when a browser-capable MCP client, such as Claude web or mobile, connects on a user's behalf.
+
+## Team API keys
+
+Create keys from [API Keys in the TubeAlfred app](https://tubealfred.com/app/api-keys). The key must have the `youtube.read` scope for the public YouTube operations described in these docs.
+
+For REST, send either header:
+
+```http
+Authorization: Bearer YOUR_TUBEALFRED_API_KEY
+```
+
+```http
+X-API-Key: YOUR_TUBEALFRED_API_KEY
+```
+
+For developer MCP clients, use bearer authentication.
+
+Treat API keys as secrets:
+
+- Store them in environment variables or a secrets manager.
+- Keep them out of client-side JavaScript, repositories, screenshots, and logs.
+- Use a separate key per environment or integration so it can be rotated independently.
+- Delete a key from the team when it is no longer needed.
+
+## Hosted MCP OAuth
+
+Browser-capable MCP clients discover the authorization flow when they connect to `https://mcp.tubealfred.com/`. Complete the TubeAlfred sign-in and approval flow in the browser rather than copying an API key into those clients.
+
+Clients implementing OAuth directly must follow the production metadata, Authorization Code with PKCE flow, token lifetime, refresh, and revocation behavior documented in the [generated authentication guide](https://tubealfred.com/auth.md). Do not hardcode authorization endpoints from this orientation guide.
+
+## Verify failures safely
+
+An authentication error is different from a permission, credit, rate-limit, or upstream error. Inspect the documented HTTP status and structured error code before retrying. Never log the credential while diagnosing a failed request.

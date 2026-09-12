@@ -1,0 +1,54 @@
+---
+title: "Command-line interface"
+description: "Install and use the TubeAlfred CLI for terminal and automation workflows."
+---
+
+The TubeAlfred CLI wraps the public API for shell use. It requires Node.js 18 or newer and a TubeAlfred team API key.
+
+## Try it without installing
+
+```bash
+npx @tubealfred/cli --help
+```
+
+## Install it globally
+
+```bash
+npm install -g @tubealfred/cli
+```
+
+Set the key in your shell environment:
+
+```bash
+export TUBEALFRED_API_KEY=ta_live_...
+```
+
+The examples on this page require a key with the `youtube.read` scope. See [Authentication](/guides/authentication) for key creation and storage guidance. Avoid placing the real value in shell history, checked-in environment files, or shared scripts.
+
+## Common workflows
+
+Fetch a transcript:
+
+```bash
+tubealfred transcript VIDEO_ID
+```
+
+Write a transcript to a file:
+
+```bash
+tubealfred --output transcript.txt transcript VIDEO_ID
+```
+
+Fetch comments as JSON:
+
+```bash
+tubealfred --format json comments VIDEO_ID --count 100
+```
+
+Search public YouTube data:
+
+```bash
+tubealfred search "creator economy" --format json
+```
+
+Run `tubealfred --help` and the relevant subcommand help for the installed version's complete command and option list. For API semantics, schemas, and errors, use the production [OpenAPI specification](https://tubealfred.com/openapi.json).
