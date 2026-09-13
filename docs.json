@@ -11,6 +11,17 @@
   "fonts": {
     "family": "Figtree"
   },
+  "logo": {
+    "light": "/images/tubealfred-light.svg",
+    "dark": "/images/tubealfred-dark.svg",
+    "href": "https://tubealfred.com"
+  },
+  "thumbnails": {
+    "appearance": "light",
+    "fonts": {
+      "family": "Figtree"
+    }
+  },
   "navigation": {
     "groups": [
       {

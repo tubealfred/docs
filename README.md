@@ -40,6 +40,8 @@ This repository is the source of truth for documentation changes. Make and revie
 
 Changes to the remote OpenAPI document are made in the application that generates it. After an OpenAPI change is deployed and verified, the current free-plan workflow requires **Activity → Manual update** in the Mintlify dashboard to rebuild the generated reference.
 
+Social previews use Mintlify's generated, page-specific cards with a light background, Figtree, and the TubeAlfred logo configured in `docs.json`. The logo wordmarks are SVG outlines so they do not depend on a viewer's installed fonts. After publishing branding changes, verify `og:image` and `twitter:image` on a guide and an API reference page; social platforms may retain previously cached previews.
+
 ## Hosting status
 
-The guides and generated reference are live through Mintlify under `https://tubealfred.com/docs`. Laravel continues to serve the landing and legacy section paths until the Forge cutover is completed. The overview pages preserve those legacy paths and their endpoint bookmarks for that cutover.
+The guides, landing, legacy-compatible overview pages, and generated reference are live through Mintlify under `https://tubealfred.com/docs` after the Forge routing cutover. Laravel continues to serve the explicitly preserved machine-readable documentation routes. The overview pages retain legacy paths and endpoint bookmarks.
