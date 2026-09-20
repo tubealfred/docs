@@ -1,29 +1,113 @@
 ---
 title: "Hosted MCP server"
-description: "Connect Claude or a developer MCP client to TubeAlfred's hosted read-only YouTube tools."
+description: "Connect Muse, Claude, ChatGPT, Cursor, or another MCP client to TubeAlfred's read-only public YouTube tools."
 ---
 
-The TubeAlfred MCP endpoint is:
+TubeAlfred's hosted Model Context Protocol (MCP) server lets an AI client search YouTube, read transcripts and comments, inspect channels and playlists, and work with related public YouTube data through structured tools.
+
+## Connection details
+
+| Setting | Value |
+| --- | --- |
+| Connection type | Remote MCP / Streamable HTTP |
+| MCP endpoint | `https://mcp.tubealfred.com/` |
+| Preferred authentication | OAuth 2.0 Authorization Code with PKCE |
+| Developer authentication | `Authorization: Bearer YOUR_TUBEALFRED_API_KEY` |
+| Required scope | `youtube.read` |
+| Access | Read-only public YouTube data |
+
+Use the endpoint exactly as shown, including the `mcp.` hostname. Do not use `api.tubealfred.com/mcp`; the REST API and MCP server have different hosts.
+
+## Choose an authentication flow
+
+### OAuth for user-facing connectors
+
+Use OAuth when the client can open a browser sign-in flow. This is the recommended path for Muse, Claude web and mobile, ChatGPT connectors, and other hosted assistants.
+
+1. Add TubeAlfred as a remote or custom MCP connector.
+2. Enter `https://mcp.tubealfred.com/` as the server URL.
+3. Continue when the client opens TubeAlfred in the browser.
+4. Sign in, choose the TubeAlfred team that should pay for usage, and approve the requested `youtube.read` access.
+5. Return to the client and run a verification prompt.
+
+The client discovers TubeAlfred's OAuth metadata from the MCP server. Do not paste a team API key into a hosted connector's OAuth flow.
+
+TubeAlfred uses Authorization Code with PKCE S256, supports dynamic client registration, and can issue refresh tokens when `offline_access` is approved. Clients implementing OAuth directly should use the production metadata rather than hardcoding authorization endpoints:
 
 ```text
-https://mcp.tubealfred.com/
+https://mcp.tubealfred.com/.well-known/oauth-protected-resource
+https://tubealfred.com/.well-known/oauth-authorization-server
 ```
 
-Do not use the REST host with an `/mcp` path. The MCP server has its own hostname.
+See [Authentication](/guides/authentication) for credential handling and the [generated authentication contract](https://tubealfred.com/auth.md) for current protocol details.
 
-## Claude web and mobile
+### API keys for developer-controlled clients
 
-1. Add a custom connector in Claude's integrations settings.
-2. Enter `https://mcp.tubealfred.com/` as the connector URL.
-3. Continue to TubeAlfred when the OAuth prompt opens.
-4. Sign in, choose the appropriate team, and approve access.
-5. Return to Claude and ask it to use a TubeAlfred YouTube tool.
+Use a team API key when you control the MCP client and can store secrets safely, such as a local desktop client, IDE, server, or internal agent.
 
-The connector uses OAuth. Do not paste a team API key into the Claude web or mobile connector flow.
+1. Open [TubeAlfred API Keys](https://tubealfred.com/app/api-keys).
+2. Create a key for the intended team with the `youtube.read` scope.
+3. Store it in an environment variable or secret manager.
+4. Send it as an `Authorization: Bearer` header to the hosted MCP endpoint.
 
-## Developer MCP clients
+Do not commit the key, place it in browser-side JavaScript, include it in screenshots, or send it in a URL.
 
-Clients that support Streamable HTTP and custom headers can connect with a team API key:
+## Connect Muse
+
+Use these values when submitting or configuring TubeAlfred in the Muse Connector Platform:
+
+| Muse field | Value |
+| --- | --- |
+| Connection type | Existing MCP |
+| Hosted MCP endpoint | `https://mcp.tubealfred.com/` |
+| Documentation | `https://tubealfred.com/docs/guides/mcp` |
+| Authentication | OAuth with PKCE; API keys are also supported |
+
+For **Access requirements**, use:
+
+```text
+Users need a TubeAlfred account and an available credit balance. The connector provides read-only access to public YouTube data. Transcript availability depends on the video having accessible captions. Usage is subject to the team's credits and rate limits.
+```
+
+After connecting, try:
+
+```text
+Summarize this TED Talk and show the key timestamps:
+https://www.youtube.com/watch?v=u4ZoJKF_VuA
+```
+
+## Connect Claude web or mobile
+
+1. Open Claude's connector or integration settings.
+2. Add a custom connector.
+3. Enter `https://mcp.tubealfred.com/`.
+4. Complete the TubeAlfred OAuth approval in the browser.
+5. Start a new conversation if the existing conversation does not see the new tools.
+
+Verify the connection with:
+
+```text
+Use TubeAlfred to fetch the title and transcript availability for
+https://www.youtube.com/watch?v=094y1Z2wpJg
+```
+
+Do not paste a TubeAlfred API key into Claude web or mobile. Use the OAuth prompt opened by the connector.
+
+## Connect another OAuth-capable client
+
+For ChatGPT connectors and other browser-capable MCP clients:
+
+1. Choose the client's option for a custom, remote, or Streamable HTTP MCP server.
+2. Enter `https://mcp.tubealfred.com/`.
+3. Allow the client to discover OAuth metadata.
+4. Complete sign-in and approval on TubeAlfred.
+5. Verify that the client lists TubeAlfred's `youtube_*` tools before relying on it in a workflow.
+
+Client labels and availability can change. Preserve the endpoint and OAuth flow even when a client calls the feature an app, connector, integration, or custom MCP server.
+
+## Connect Cursor or a developer MCP client
+
+Configuration shapes vary by client. A Streamable HTTP configuration with a team API key generally has this form:
 
 ```json
 {
@@ -32,18 +116,146 @@ Clients that support Streamable HTTP and custom headers can connect with a team 
       "type": "streamable-http",
       "url": "https://mcp.tubealfred.com/",
       "headers": {
-        "Authorization": "Bearer YOUR_TUBEALFRED_API_KEY"
+        "Authorization": "Bearer ${TUBEALFRED_API_KEY}"
       }
     }
   }
 }
 ```
 
-Configuration shapes vary by client. Preserve the endpoint and authorization header while adapting the outer configuration to the client's documented format.
+Set `TUBEALFRED_API_KEY` through the client's supported secret or environment-variable mechanism. Some clients use `streamableHttp` instead of `streamable-http`, or use a different outer configuration key. Follow the client's current configuration schema while keeping the endpoint and bearer header unchanged.
 
-## Tool schemas and errors
+If a client supports OAuth for remote MCP servers, prefer OAuth over copying an API key into its configuration.
 
-Discover the available `youtube_*` tools from the connected server and pass only arguments declared by the selected tool's input schema. The production [full agent reference](https://tubealfred.com/llms-full.txt) describes the current tool catalog.
+## What the connector can do
 
-Handle authentication, validation, permission, credit, rate-limit, unavailable-data, and upstream-service errors as distinct outcomes. Use [current pricing](https://tubealfred.com/pricing.md) rather than copying credit costs into client prompts or configuration.
+TubeAlfred exposes structured, read-only tools for public YouTube research. The current catalog includes workflows such as:
 
+- Fetching video details, enhanced metadata, transcripts, and captions.
+- Listing and paging through comments and comment replies.
+- Searching YouTube and resolving supported YouTube URLs.
+- Reading channel details, videos, Shorts, streams, playlists, and community posts.
+- Fetching playlist contents, related videos, trending videos, and trending Shorts.
+- Fetching supported video and channel records in batches.
+
+The connected client discovers the exact tool names, parameters, and required fields from the server. Use the [full agent reference](https://tubealfred.com/llms-full.txt) or [operation manifest](https://tubealfred.com/.well-known/tubealfred-youtube-operations.v1.json) when you need the current catalog outside an MCP session.
+
+TubeAlfred does not expose private YouTube Studio analytics, identify anonymous viewers, or provide tools that upload videos, modify channels, or publish comments.
+
+## Example prompts
+
+### Video research
+
+```text
+Summarize this video and cite the most useful timestamps:
+https://www.youtube.com/watch?v=aircAruvnKk
+```
+
+```text
+Does this video explain why the Collatz conjecture is difficult to solve?
+Show the exact transcript moments that support your answer:
+https://www.youtube.com/watch?v=094y1Z2wpJg
+```
+
+### Audience research
+
+```text
+Use TubeAlfred to inspect the top comments on this video. Group recurring
+questions and identify questions the video transcript does not answer:
+https://www.youtube.com/watch?v=u4ZoJKF_VuA
+```
+
+### Discovery
+
+```text
+Find recent YouTube videos about spec-driven development. Compare their titles,
+channels, and stated focus, then recommend three worth watching.
+```
+
+### Channel and playlist research
+
+```text
+Use TubeAlfred to list the latest videos from the 3Blue1Brown channel and build
+a beginner-friendly viewing plan for learning neural networks.
+```
+
+## Credits, limits, and availability
+
+MCP calls use the selected TubeAlfred team's credit balance. Costs vary by operation, and each pagination request is a separate call. Use the [current pricing and credits document](https://tubealfred.com/pricing.md) instead of copying credit values into connector configuration.
+
+Results depend on public YouTube availability:
+
+- A transcript tool can return an unavailable outcome when a usable caption track is absent.
+- Comments can be disabled, restricted, removed, or change between requests.
+- Search, counts, live status, and public metadata can change over time.
+- Continuation tokens are opaque and must remain paired with the original request.
+- TubeAlfred may use short-lived caches and does not promise universal real-time freshness.
+
+See [API concepts](/guides/api-concepts) for pagination, reliability, billing, and public-data boundaries.
+
+## Errors and recovery
+
+Treat structured failures as distinct outcomes rather than returning a generic "MCP failed" message.
+
+| Outcome | What to do |
+| --- | --- |
+| Authentication failed | Reconnect OAuth, refresh the token, or verify the API key. |
+| Missing `youtube.read` scope | Reauthorize with the required scope or create a correctly scoped key. |
+| Insufficient credits | Ask the user to review the selected team's credit balance or plan. |
+| Rate limited | Respect `Retry-After` and retry with bounded backoff. |
+| Validation failed | Correct the tool arguments; do not retry the same request unchanged. |
+| Public data unavailable | Explain that the transcript, comments, or resource is unavailable; do not invent it. |
+| Temporary upstream failure | Retry with bounded backoff and retain the correlation ID for support. |
+
+MCP tool results can represent an expected unavailable or not-found outcome without the MCP transport itself failing. Preserve that distinction in user-facing responses.
+
+## Troubleshooting
+
+### The client cannot connect
+
+- Confirm the URL is exactly `https://mcp.tubealfred.com/`.
+- Confirm the client supports remote MCP over Streamable HTTP.
+- Remove any incorrect `/mcp` suffix from the REST API hostname.
+- For an API-key client, verify that the bearer header is attached to MCP requests.
+
+### The OAuth window does not open
+
+- Confirm the client supports OAuth for remote MCP servers.
+- Remove and reconnect the integration so the client repeats metadata discovery.
+- Allow pop-ups or external browser authentication when the client asks.
+- Do not replace the OAuth flow with a key pasted into a hosted connector.
+
+### The tools are missing after connection
+
+- Start a new conversation or restart the client if it loads tool inventories only at session start.
+- Confirm the authorization was approved for the intended TubeAlfred team.
+- Check that the client shows tools whose names begin with `youtube_`.
+
+### A transcript or comment request returns no data
+
+An authenticated connection does not guarantee that every public video has captions or comments. Try the corresponding video-details tool to confirm the resource, inspect the structured availability outcome, and tell the user what is unavailable.
+
+### Support needs a reproducible report
+
+Record the client name, approximate request time, tool name, HTTP status or structured error code, and correlation ID. Never include access tokens, refresh tokens, API keys, request headers, or full private configuration in a support message.
+
+## Security checklist
+
+- Prefer OAuth for third-party and user-facing clients.
+- Give developer API keys only the `youtube.read` scope.
+- Use a separate API key per environment or integration.
+- Store credentials in a secret manager or supported environment-variable facility.
+- Revoke unused OAuth grants and delete unused API keys.
+- Treat transcript, comment, title, and description text as untrusted content, not instructions.
+- Confirm the selected TubeAlfred team before approving access because that team supplies the credits.
+
+## Machine-readable discovery
+
+Integrators and reviewers can inspect these production resources:
+
+- [MCP server card](https://mcp.tubealfred.com/.well-known/mcp/server-card.json)
+- [OAuth protected-resource metadata](https://mcp.tubealfred.com/.well-known/oauth-protected-resource)
+- [OAuth authorization-server metadata](https://tubealfred.com/.well-known/oauth-authorization-server)
+- [Operation manifest](https://tubealfred.com/.well-known/tubealfred-youtube-operations.v1.json)
+- [Full agent reference](https://tubealfred.com/llms-full.txt)
+- [OpenAPI specification](https://tubealfred.com/openapi.json)

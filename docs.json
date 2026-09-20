@@ -3,6 +3,10 @@
   "theme": "mint",
   "name": "TubeAlfred Docs",
   "description": "Use TubeAlfred through its REST API, hosted MCP server, or command-line interface.",
+  "appearance": {
+    "default": "system",
+    "strict": false
+  },
   "colors": {
     "primary": "#d92930",
     "light": "#fb7185",
