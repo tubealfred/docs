@@ -20,6 +20,7 @@
     "dark": "/images/tubealfred-dark.svg",
     "href": "https://tubealfred.com"
   },
+  "favicon": "/images/favicon.svg",
   "thumbnails": {
     "appearance": "light",
     "fonts": {
