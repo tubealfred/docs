@@ -17,12 +17,34 @@ Requests use the team's credit balance. Check the current [pricing and credits d
 
 ## 2. Send a request
 
-Use the key as a bearer token:
+Use the key as a bearer token and identify your application with a descriptive `User-Agent`:
 
-```bash
+<CodeGroup>
+```bash cURL
 curl "https://api.tubealfred.com/v1/youtube/search?query=how+to+learn+faster" \
-  -H "Authorization: Bearer YOUR_TUBEALFRED_API_KEY"
+  -H "Authorization: Bearer YOUR_TUBEALFRED_API_KEY" \
+  -H "User-Agent: my-app/1.0"
 ```
+
+```python Python
+import json
+import os
+import urllib.request
+
+request = urllib.request.Request(
+    "https://api.tubealfred.com/v1/youtube/search?query=how+to+learn+faster",
+    headers={
+        "Authorization": f"Bearer {os.environ['TUBEALFRED_API_KEY']}",
+        "User-Agent": "my-app/1.0",
+    },
+)
+
+with urllib.request.urlopen(request, timeout=30) as response:
+    print(json.load(response))
+```
+</CodeGroup>
+
+Replace `my-app/1.0` with your application's name and version. Default library User-Agents, including Python's `urllib` default, can trigger an [edge security block](/guides/api-concepts#cloudflare-error-1010).
 
 REST requests may instead send the same key with the `X-API-Key` header. Bearer authentication is the recommended default because it also matches developer MCP configuration.
 
@@ -30,7 +52,7 @@ REST requests may instead send the same key with the `X-API-Key` header. Bearer 
 
 Successful responses use a `status: "success"` envelope. The endpoint-specific payload is in `data`.
 
-Failures use the HTTP status code and a flat response object that always includes `message`; they do not use the success envelope. Clients should handle authentication, validation, permission, credit, rate-limit, unavailable-data, and upstream-service errors separately. For the request and response contract, open **Search** under **REST API reference → Discovery endpoints** in the sidebar.
+Application failures use the HTTP status code and a flat response object that always includes `message`; they do not use the success envelope. Edge security blocks can use a different response format. Clients should handle authentication, validation, permission, credit, rate-limit, unavailable-data, and upstream-service errors separately. For the request and response contract, open **Search** under **REST API reference → Discovery endpoints** in the sidebar.
 
 Do not infer current costs or limits from examples. Use the generated [pricing document](https://tubealfred.com/pricing.md) for current credit information and the response headers and error schema documented for each endpoint.
 

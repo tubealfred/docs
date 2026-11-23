@@ -34,6 +34,16 @@ Browser-capable MCP clients discover the authorization flow when they connect to
 
 Clients implementing OAuth directly must follow the production metadata, Authorization Code with PKCE flow, token lifetime, refresh, and revocation behavior documented in the [generated authentication guide](https://tubealfred.com/auth.md). Do not hardcode authorization endpoints from this orientation guide.
 
+## Identify your client
+
+For server-to-server REST, MCP, and OAuth requests, send a `User-Agent` containing your application's name and version:
+
+```http
+User-Agent: my-app/1.0
+```
+
+Use your actual application name and version. Cloudflare can block default library User-Agents, including Python's `urllib` default, before TubeAlfred authenticates the request. See the [REST quickstart](/quickstart#2-send-a-request) for cURL and Python examples and [Error 1010 troubleshooting](/guides/api-concepts#cloudflare-error-1010) if a request is blocked.
+
 ## Verify failures safely
 
-An authentication error is different from a permission, credit, rate-limit, or upstream error. Inspect the documented HTTP status and structured error code before retrying. Never log the credential while diagnosing a failed request.
+An authentication error is different from a permission, credit, rate-limit, upstream, or edge security error. Inspect the documented HTTP status and structured error code before retrying. Error 1010 alone does not establish that a credential is invalid. Never log the credential while diagnosing a failed request.

@@ -116,7 +116,8 @@ Configuration shapes vary by client. A Streamable HTTP configuration with a team
       "type": "streamable-http",
       "url": "https://mcp.tubealfred.com/",
       "headers": {
-        "Authorization": "Bearer ${TUBEALFRED_API_KEY}"
+        "Authorization": "Bearer ${TUBEALFRED_API_KEY}",
+        "User-Agent": "my-app/1.0"
       }
     }
   }
@@ -124,6 +125,8 @@ Configuration shapes vary by client. A Streamable HTTP configuration with a team
 ```
 
 Set `TUBEALFRED_API_KEY` through the client's supported secret or environment-variable mechanism. Some clients use `streamableHttp` instead of `streamable-http`, or use a different outer configuration key. Follow the client's current configuration schema while keeping the endpoint and bearer header unchanged.
+
+Replace `my-app/1.0` with your integration's name and version. If you implement an MCP client, set a descriptive `User-Agent` on discovery, OAuth, and MCP requests made by your client's HTTP library. The browser manages its own User-Agent during sign-in and consent. See [client identification](/guides/authentication#identify-your-client).
 
 If a client supports OAuth for remote MCP servers, prefer OAuth over copying an API key into its configuration.
 
@@ -220,6 +223,10 @@ MCP tool results can represent an expected unavailable or not-found outcome with
 - Remove any incorrect `/mcp` suffix from the REST API hostname.
 - For an API-key client, verify that the bearer header is attached to MCP requests.
 
+### The client receives Cloudflare Error 1010
+
+HTTP `403` with Error `1010` or `browser_signature_banned` can occur before MCP authentication, even with a valid credential. If you control the client, set a descriptive `User-Agent` on its HTTP requests. If a hosted connector does not expose header settings, include its name and version when contacting TubeAlfred support. Follow the [edge error troubleshooting steps](/guides/api-concepts#cloudflare-error-1010).
+
 ### The OAuth window does not open
 
 - Confirm the client supports OAuth for remote MCP servers.
@@ -239,7 +246,7 @@ An authenticated connection does not guarantee that every public video has capti
 
 ### Support needs a reproducible report
 
-Record the client name, approximate request time, tool name, HTTP status or structured error code, and correlation ID. Never include access tokens, refresh tokens, API keys, request headers, or full private configuration in a support message.
+Record the client name and version, request time in UTC, hostname, request path or tool name, HTTP status or structured error code, and correlation ID. For a Cloudflare block, also include the `CF-Ray` response header. Never include full request headers, access tokens, refresh tokens, API keys, cookies, or private configuration in a support message.
 
 ## Security checklist
 
